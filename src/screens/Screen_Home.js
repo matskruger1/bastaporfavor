@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Card from '../components/Card';
-import { getData } from '../api/rickandmorty';
+import { getUser} from '../api/rickandmorty';
 // import { card } from '../../styles/styles';
 
-import { View, ActivityIndicator, TouchableOpacity, Text, FlatList, TextInput } from "react-native";
+
+import { View, ActivityIndicator, TouchableOpacity, Text, FlatList, TextInput, ScrollView } from "react-native";
 
 export default class Screen extends Component {
   
 constructor() {
   super();
   this.state = {
-    show: {},
+    show: [],
     likes:[],
     contador:1,
     dislikes:[]
@@ -31,9 +32,10 @@ async deleteCard() {
 getDataFromApi() {
   getUser(this.state.contador)
   .then((result)=> {
+    console.log(result.length);
     this.setState({show: result})
   }) 
-
+  
 }
 
 async componentDidMount(){
@@ -58,6 +60,19 @@ async savePerson(item){
 
 
   render (){
+    let tarjetas = this.state.show.map((item) => 
+      <Card
+              key={item.id}
+              name={item.name} 
+              species={item.species} 
+              status={item.status} 
+              image={item.image} 
+            />
+    
+    );
+
+
+
     return (
     <View>
 
@@ -72,13 +87,15 @@ async savePerson(item){
         ?
 
           <View style= {{backgroundColor: '#87cefa', borderWidth: 5, margin: 2}}>
-            
-            <Card
+            <ScrollView>
+              {tarjetas}
+            </ScrollView>
+            {/* <Card
               name={this.state.show.name} 
               species={this.state.show.species} 
               status={this.state.show.status} 
               image={this.state.show.image} 
-            />
+            /> */}
   
             <TouchableOpacity onPress={() => this.savePerson(this.state.show) }><Text>Guardar</Text></TouchableOpacity>
             <TouchableOpacity onPress={() => this.deleteCard() }>
